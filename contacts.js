@@ -1,6 +1,8 @@
 const fs = require('fs/promises');
 const path = require('path');
 const crypto = require('crypto');
+const { constants } = require('buffer');
+const { resourceLimits } = require('worker_threads');
 
 const contactsPath = path.join(__dirname, 'db', 'contacts.json');
 
@@ -18,14 +20,27 @@ async function listContacts() {
  return readContacts();
 };
 
-
-
-function getContactById(contactId) {
-    // ...твой код
+async function getContactById(contactId) {
+    try {
+        const contacts = await readContacts()
+        const [result] = contacts.filter((contact) => 
+        contact.id === Number(contactId))
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
-function removeContact(contactId) {
-    // ...твой код
+async function removeContact(contactId) {
+    try {
+        const contacts = await readContacts();
+        const newList = contacts.filter(contact => 
+            contact.id !== Number(contactId))
+        await fs.writeFile(contactsPath, JSON.stringify(newList), 'utf8');
+        return newList;
+    } catch (error) {
+        console.error(error); 
+    }
 }
 
 async function addContact(name, email, phone ) {
@@ -51,15 +66,3 @@ module.exports = {
     removeContact,
     addContact,
 }
-
-// function listContacts() {
-//     fs.readFile(contactsPath, 'utf8', (error, data) => {
-//         if (error) {
-//             console.log(error)
-//         }
-//         console.log(data)
-//     })
-// }
-
-// const contactsPath = path.resolve('db', 'contacts.json');
-// console.log(contactsPath);

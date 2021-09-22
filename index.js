@@ -29,7 +29,16 @@ function invokeAction({ action, id, name, email, phone }) {
       break;
 
     case 'get':
-      // ... id
+      getContactById(id)
+      .then((contact) => {
+        if (contact) {
+          console.log(chalk.blue('Contact found!'))
+          console.log(contact)
+        } else {
+          console.log(chalk.yellow('Contact not found!'))
+        }
+      })
+      .catch(console.error);
       break;
 
     case 'add':
@@ -42,11 +51,20 @@ function invokeAction({ action, id, name, email, phone }) {
       break;
 
     case 'remove':
-      // ... id
+      removeContact(id)
+       .then((contact) => {
+        if (contact) {
+          console.log(chalk.red('Contact removed'))
+          console.log(contact)
+        } else {
+          console.log(chalk.yellow('Contact not removed!'))
+        }
+       })
+       .catch(console.error)
       break;
 
     default:
-      console.warn('\x1B[31m Unknown action type!');
+      console.warn(chalk.red('Unknown action type!'));
   }
 }
 
